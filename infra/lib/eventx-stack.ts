@@ -92,7 +92,6 @@ export class EventXStack extends Stack {
       comment: 'EventX web app',
       defaultRootObject: 'index.html',
       priceClass: cloudfront.PriceClass.PRICE_CLASS_100,
-      minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
       httpVersion: cloudfront.HttpVersion.HTTP2_AND_3,
       defaultBehavior: {
         origin: origins.S3BucketOrigin.withOriginAccessControl(siteBucket),
@@ -144,7 +143,7 @@ export class EventXStack extends Stack {
     const userPoolClient = userPool.addClient('WebClient', {
       userPoolClientName: 'eventx-web',
       generateSecret: false, // browser app - PKCE authorization code flow
-      authFlows: { userSrp: true },
+      authFlows: { userSrp: true, adminUserPassword: true }, // admin flow = server-side only (IAM), used by smoke tests
       preventUserExistenceErrors: true,
       oAuth: {
         flows: { authorizationCodeGrant: true },

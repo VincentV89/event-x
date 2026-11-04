@@ -5,6 +5,9 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 export AWS_REGION="${AWS_REGION:-us-east-1}"
 export AWS_DEFAULT_REGION="$AWS_REGION" CDK_DEFAULT_REGION="$AWS_REGION"
+# Some runtimes (e.g. role credentials only visible to the AWS CLI) need the CLI's credentials
+# handed to CDK. Opt in with EVENTX_EXPORT_CLI_CREDENTIALS=1 - values stay in this process only.
+if [ "${EVENTX_EXPORT_CLI_CREDENTIALS:-0}" = "1" ]; then eval "$(aws configure export-credentials --format env)"; fi
 export CDK_DEFAULT_ACCOUNT="$(aws sts get-caller-identity --query Account --output text)"
 echo "Deploying to account $CDK_DEFAULT_ACCOUNT in $AWS_REGION"
 

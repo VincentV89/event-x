@@ -57,7 +57,8 @@ describe('public API', () => {
     expect(res.statusCode).toBe(201);
     expect(JSON.parse(res.body as string).confirmationId).toMatch(/^EVX-/);
     const tx = ddbMock.commandCalls(TransactWriteCommand)[0].args[0].input.TransactItems!;
-    expect(tx[0].Update?.ConditionExpression).toContain('registeredCount < capacity');
+    expect(tx[0].Update?.ConditionExpression).toContain('registeredCount < #cap');
+    expect(tx[0].Update?.ExpressionAttributeNames).toEqual({ '#cap': 'capacity' });
     expect(tx[1].Put?.Item?.SK).toBe('EMAIL#ada@example.com');
   });
 
@@ -115,5 +116,17 @@ describe('admin API', () => {
     const tx = ddbMock.commandCalls(TransactWriteCommand)[0].args[0].input.TransactItems!;
     expect(tx).toHaveLength(3);
     expect(tx[1].Delete?.Key?.SK).toBe('EMAIL#a@x.io');
+  });
+});
+
+describe('concurrency handling', () => {
+  it('retries transaction conflicts and then succeeds', async () => {
+    ddbMock.on(TransactWriteCommand)
+      .rejectsOnce(cancelled(['TransactionConflict', 'None', 'None']))
+      .resolves({});
+    ddbMock.on(GetCommand).resolves({ Item: META });
+    const res = await publicHandler(pub('POST /events/{eventId}/registrations', { name: 'Ada', email: 'ada@example.com', organization: 'Org' }));
+    expect(res.statusCode).toBe(201);
+    expect(ddbMock.commandCalls(TransactWriteCommand)).toHaveLength(2);
   });
 });

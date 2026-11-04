@@ -98,6 +98,23 @@ export async function getEvent(eventId: string): Promise<EventSummary> {
 export async function registerAttendee(
   eventId: string,
   input: RegistrationInput,
+  maxAttempts = 5,
+): Promise<{ confirmationId: string; createdAt: string }> {
+  // Concurrent transactions touching the same counter item may be rejected with TransactionConflict.
+  // They are safe to retry: the conditions are re-evaluated, so capacity is never exceeded.
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await registerOnce(eventId, input);
+    } catch (err) {
+      if (!(err instanceof HttpError && err.code === 'BUSY') || attempt >= maxAttempts) throw err;
+      await new Promise((r) => setTimeout(r, Math.random() * 50 * 2 ** attempt));
+    }
+  }
+}
+
+async function registerOnce(
+  eventId: string,
+  input: RegistrationInput,
   now = new Date(),
 ): Promise<{ confirmationId: string; createdAt: string }> {
   const confirmationId = newConfirmationId();
@@ -112,7 +129,8 @@ export async function registerAttendee(
               TableName: tableName(),
               Key: { PK: pk, SK: 'META' },
               UpdateExpression: 'SET registeredCount = registeredCount + :one, updatedAt = :now',
-              ConditionExpression: 'attribute_exists(PK) AND registeredCount < capacity AND registrationOpen = :true',
+              ConditionExpression: 'attribute_exists(PK) AND registeredCount < #cap AND registrationOpen = :true',
+              ExpressionAttributeNames: { '#cap': 'capacity' }, // "capacity" is a DynamoDB reserved word
               ExpressionAttributeValues: { ':one': 1, ':now': createdAt, ':true': true },
             },
           },
