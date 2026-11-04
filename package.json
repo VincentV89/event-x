@@ -1,0 +1,16 @@
+{
+  "name": "eventx",
+  "private": true,
+  "version": "1.0.0",
+  "description": "EventX - serverless event registration & management platform",
+  "workspaces": ["backend", "frontend", "infra"],
+  "scripts": {
+    "build": "npm run build -w backend && npm run build -w frontend && npm run build -w infra",
+    "lint": "npm run lint -w backend && npm run lint -w frontend && npm run lint -w infra",
+    "test": "npm test -w backend && npm test -w infra",
+    "deploy": "bash scripts/deploy.sh",
+    "seed": "node scripts/seed.mjs",
+    "smoke": "node scripts/smoke-test.mjs",
+    "destroy": "bash scripts/destroy.sh"
+  }
+}

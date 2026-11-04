@@ -1,0 +1,11 @@
+[tasks.install]
+run = "npm ci || npm install"
+
+[tasks.build]
+run = "npm run build"
+
+[tasks.lint]
+run = "npm run lint"
+
+[tasks.test]
+run = "npm test"

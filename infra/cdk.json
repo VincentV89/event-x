@@ -1,0 +1,10 @@
+{
+  "app": "npx tsx bin/eventx.ts",
+  "context": {
+    "stackName": "bgagent-dev-vincentv89-event-x-e18e16ec0dda",
+    "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
+    "@aws-cdk/core:checkSecretUsage": true,
+    "@aws-cdk/aws-iam:minimizePolicies": true,
+    "@aws-cdk/core:target-partitions": ["aws"]
+  }
+}
