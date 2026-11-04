@@ -168,3 +168,16 @@ Besides the services above, CDK adds a few helper resources that are part of the
 - IAM roles for those helper Lambdas, also logged to CloudWatch
 
 They run only during deploy and destroy.
+
+## Current development deployment
+
+| Item | Value |
+|---|---|
+| Account / region | `879594333699` / `us-east-1` |
+| CloudFormation stack | `bgagent-dev-vincentv89-event-x-e18e16ec0dda` (set in `infra/cdk.json`) |
+| Website | https://d17flepx4rgi5s.cloudfront.net |
+| Organizer portal | https://d17flepx4rgi5s.cloudfront.net/organizer |
+| API | https://4nts0rkkcc.execute-api.us-east-1.amazonaws.com |
+| Cognito user pool | `us-east-1_G6WqtAyIy` (group `organizers`) |
+
+Re-deploying updates this same stack. `npm run destroy` removes it.

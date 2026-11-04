@@ -95,7 +95,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      <main className="relative z-10 mx-auto -mt-14 grid max-w-7xl gap-8 px-6 pb-20 lg:grid-cols-[1.4fr_1fr]">
+      <main className="relative z-10">
+        {/* Grid lives on a div: Cloudscape's unlayered base CSS sets main { display: block } which would override Tailwind's layered utilities. */}
+        <div className="mx-auto -mt-14 grid max-w-7xl gap-8 px-6 pb-20 lg:grid-cols-[1.4fr_1fr]">
         <div className="space-y-8">
           {error && <Alert type="error" header="Unable to load event">{error}</Alert>}
           <section id="about">
@@ -104,7 +106,7 @@ export default function HomePage() {
                 <div className="space-y-5">
                   <p className="text-base leading-7 text-slate-700">{event.description}</p>
                   {!!event.highlights?.length && (
-                    <ul className="grid gap-3 sm:grid-cols-2">
+                    <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2">
                       {event.highlights.map((h) => (
                         <li key={h} className="flex items-start gap-3 rounded-xl bg-slate-50 p-3 text-sm text-slate-700">
                           <span className="mt-0.5 inline-flex h-5 w-5 flex-none items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 text-xs text-white">✓</span>
@@ -121,7 +123,7 @@ export default function HomePage() {
           </section>
           <section id="agenda">
             <Container header={<Header variant="h2" description="Day 1 highlights">Agenda</Header>}>
-              <ol className="divide-y divide-slate-100">
+              <ol className="m-0 list-none divide-y divide-slate-100 p-0">
                 {AGENDA.map((a) => (
                   <li key={a.time} className="flex flex-col gap-1 py-3 sm:flex-row sm:items-center sm:gap-6">
                     <span className="w-16 font-mono text-sm font-semibold text-slate-500">{a.time}</span>
@@ -151,6 +153,7 @@ export default function HomePage() {
             )}
           </Container>
         </aside>
+        </div>
       </main>
 
       <footer className="border-t border-slate-200 bg-white py-8 text-center text-sm text-slate-500">
